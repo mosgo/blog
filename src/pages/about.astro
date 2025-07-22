@@ -1,24 +1,37 @@
 ---
 import '../styles/global.css';
-import '../components/header.astro';
-import '../components/footer.astro';
+import Footer from '../components/footer.astro';
+import Header from '../components/header.astro';
 
-const pageTitle = 
+const pageTitle = "About";
 
 ---
 
-<html lang="en">
+<html lang="en" style="font-family: 'Roboto Mono Variable', monospace">
 	<head>
+	<style is:global>
+		body {
+			font-family: 'IA Writer', sans-serif
+		}
+		
+		#hero {
+    		@apply pb-6 pt-8;
+  		}
+	</style>
 		<meta charset="utf-8" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
 		<title>Astro</title>
+	
 	</head>
 	<body>
+		<div class="row">
 		<h1>Lyndon Saffery</h1>
-		<h2>About</h2>
-		<p>This is a test page for my future blog page</p>
+		<Header />
+		</div>
+		<hr/>
 		<p>Stay tuned!</p>
+		<Footer />
 	</body>
 </html>

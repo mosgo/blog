@@ -1,0 +1,46 @@
+---
+import Header from "../components/header.astro";
+import Footer from "../components/footer.astro";
+import "../styles/global.css";
+const { pageTitle } = Astro.props;
+---
+
+<html lang="en" style="font-family: 'Roboto Mono Variable', monospace">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/aya.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{pageTitle}</title>
+  </head>
+  <body>
+    <div class="row">
+      <h1>Lyndon Saffery</h1>
+      <Header />
+    </div>
+    <hr />
+        <style>
+          nav{
+            width:50px;
+          }
+            h1 {
+                color: Black;
+                font-size: 3rem;
+                font-weight: bold;
+            }
+            Footer {
+              border-radius: 15px 15px 15px 15px;
+                background: #CDCDCD;
+                padding: 20px;
+                width: 40%;
+                height: 150px;
+                position: absolute;
+            }
+        </style>
+    <slot />
+    <Footer />
+    <script>
+      import "../scripts/menu.js";
+    </script>
+  </body>
+</html>

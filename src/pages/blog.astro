@@ -1,8 +1,13 @@
 ---
+import '../styles/global.css';
+import Header from '../components/header.astro';
+import '../components/footer.astro';
+import Footer from '../components/footer.astro';
 
+const pageTitle = "Blog";
 ---
 
-<html lang="en">
+<html lang="en" style="font-family: 'Roboto Mono Variable', monospace">
 	<head>
 		<meta charset="utf-8" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -11,9 +16,15 @@
 		<title>Astro</title>
 	</head>
 	<body>
+		<div class="row">
 		<h1>Lyndon Saffery</h1>
+		<Header />
+		</div>
+		<hr/>
 		<h2>Blog</h2>
 		<p>This is a test page for my future blog page</p>
 		<p>Stay tuned!</p>
+		<Footer />
+		<a href="/posts/post-1/">Post</a>
 	</body>
 </html>
