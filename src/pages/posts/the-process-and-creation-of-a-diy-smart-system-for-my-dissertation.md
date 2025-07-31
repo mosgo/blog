@@ -36,7 +36,7 @@ The choices of hardware and software is rather vast in the scope of ESP32-based 
 
 The ESP32 microcontroller acts as the hub for all communication between the sensors and the server it is connected to. Arduino IDE was used to program and include all the necessary libraries into my code, mostly because of its convenience with programming and interacting microcontroller devices. C++ code was used to create the programs which were used to collect and send data to Node-RED and Unreal Engine 5 (through JSON to various ports or websockets).
 
-<img src= '../src/pages/images/image.png' class="center">
+<img src= '../src/pages/posts/images/image.png' class="center">
 
 This is the full hardware setup (not including the server) that was used to collect data and send it over the network. The components are all stationed on a breadboard so all the sensors can be used at the same time with the power rails distributing power to both sensors at once.
 
@@ -101,7 +101,7 @@ void loop() {
 
 Now we've successfully collected the data and send it over to Node-RED, it's time to open Node-RED, set it up and see what data it is reading. I've already created a flow which takes all fo the data and formats it to be displayed in a live dashboard (and sent over to the database).
 
-<img src='../src/pages/images/nodes.png' class="center"/>
+<img src='../src/pages/posts/images/nodes.png' class="center"/>
 
 A post request is first sent to the server containing all of the data collected from the sensors. Once it has been received, it's read and sent to an SQLite server to store the data, a Websocket to communicate to Unreal Engine 5 and a dashboard to visualise the data.
 
@@ -127,21 +127,21 @@ We need to prepare a JSON buffer first to send over to our Node-RED server, whic
 }
 ```
 
-<img src='../src/pages/images/request.png' class="center"/>
+<img src='../src/pages/posts/images/request.png' class="center"/>
 
 This data is formatted using JSON and is sent over as an object containing the data stored in various properties. This data is later used to differentiate the data so it can be visualised in various columns.
 
-<img src='../src/pages/images/objectImage.png' class="center02"/>
+<img src='../src/pages/posts/images/objectImage.png' class="center02"/>
 
 Once this is sent over to Node-RED, it's basically stored in memory until the server shuts down or overwrites that data with the next POST request that is sent over by the ESP32. This data is then visualised in a dashboard which is constantly updated every time it detects a change in values from the server. It's split into different columns and dynamically changes based on the resolution that it is being displayed on.
 
-<img src='../src/pages/images/dashboard.png' class="center"/>
+<img src='../src/pages/posts/images/dashboard.png' class="center"/>
 
 This is the dashboard after running for just a few minutes. As you can see, the graph dynamically changes in size based on the history of data collected, and a few gauges represent the data now and how acceptable it is. The 'advice' section is merely an if/else statement that changes based on the value it reads. 
 
 For anyone wishing to view the data outside of the dashboard, the information is accessible from outside of the dashboard from an MQTT server. MQTT as a standardised publish/subscribe push protocol that was released by IBM in 1999 and was initially designed to send data accurately under large network delays or low bandwidth connections.  Its base design defines the following structure:
 
-<img src='../src/pages/images/mqtt.png' class="center"/>
+<img src='../src/pages/posts/images/mqtt.png' class="center"/>
 
 This can even be accessed from a mobile device on the same network, which vastly expands the applications the data can be used in.
 
@@ -201,7 +201,7 @@ void AWebSocketActor::OnClosed(int32 StatusCode, const FString& Reason, bool bWa
 
 This code informs the user when the game has had a Websocket connection, and once it has it prints the incoming string into the game, presenting it for the player in the game. This is presented using a TextObject in the game that changes based on what is reads from the incoming Websocket data.
 
-<img src='../src/pages/images/ingameweb.png' class="center"/>
+<img src='../src/pages/posts/images/ingameweb.png' class="center"/>
 
 
 <h1>What didn't work?</h1>
@@ -215,4 +215,4 @@ A few things did work fine though. SQL was a very functional and easy way to sto
 
 Through this project, I learned that it's indeed possible to setup and create a system that monitors air quality and humidity at a very affordable price (under £10!). This project as able to collect constructive data and displayed the relevant benefits and flaws of using such a system. It provides good quality data, but nothing accurate enough to be used in industry. Networking capabilities and power use is generally low from this project, meaning that because of its low bandwidth it can run in various places, such as a campus or a business building at scale without hindering the existing network or compromising security.  Using the UI, it’s entirely possible for managers and users to accurately understand and benefit from reading real-time temperature, gas concentration and humidity data from a building.
 
-If I were to do this again, I'd focus on what it could do. For example, this system can only monitor one space, but it could quite easily monitor multiple spaces at once and split them into different categories based on the room it is in. Using modern AI tools, it could also be possible to suggest to managers what could be improved or changed in a room to improve the room air quality. It has quite a lot of potential, but because of the time I had to work on this project, half of my ambitions were not met. Despite all of this, I'm really happy with how it all turned out and I'll probably return to this project once I have the time!
+If I were to do this again, I'd focus on what it could do. For example, this system can only monitor one space, but it could quite easily monitor multiple spaces at once and split them into different categories based on the room it is in. Using modern AI tools, it could also be possible to suggest to managers what could be improved or changed in a room to improve the room air quality. It has quite a lot of potential, but because of the time I had to work on this project, half of my ambitions were not met. Despite all of this, I'm really happy with how it all turned out and I'll probably return to this project once I have the time! 
