@@ -36,7 +36,7 @@ The choices of hardware and software is rather vast in the scope of ESP32-based 
 
 The ESP32 microcontroller acts as the hub for all communication between the sensors and the server it is connected to. Arduino IDE was used to program and include all the necessary libraries into my code, mostly because of its convenience with programming and interacting microcontroller devices. C++ code was used to create the programs which were used to collect and send data to Node-RED and Unreal Engine 5 (through JSON to various ports or websockets).
 
-<img src= '../src/pages/posts/images/image.png' class="center">
+<img src= '../public/images/image.png' class="center">
 
 This is the full hardware setup (not including the server) that was used to collect data and send it over the network. The components are all stationed on a breadboard so all the sensors can be used at the same time with the power rails distributing power to both sensors at once.
 
@@ -101,7 +101,7 @@ void loop() {
 
 Now we've successfully collected the data and send it over to Node-RED, it's time to open Node-RED, set it up and see what data it is reading. I've already created a flow which takes all fo the data and formats it to be displayed in a live dashboard (and sent over to the database).
 
-<img src='../src/pages/posts/images/nodes.png' class="center"/>
+<img src='../public/images/nodes.png' class="center"/>
 
 A post request is first sent to the server containing all of the data collected from the sensors. Once it has been received, it's read and sent to an SQLite server to store the data, a Websocket to communicate to Unreal Engine 5 and a dashboard to visualise the data.
 
@@ -127,21 +127,21 @@ We need to prepare a JSON buffer first to send over to our Node-RED server, whic
 }
 ```
 
-<img src='../src/pages/posts/images/request.png' class="center"/>
+<img src='../public/images/request.png' class="center"/>
 
 This data is formatted using JSON and is sent over as an object containing the data stored in various properties. This data is later used to differentiate the data so it can be visualised in various columns.
 
-<img src='../src/pages/posts/images/objectImage.png' class="center02"/>
+<img src='../public/images/objectImage.png' class="center02"/>
 
 Once this is sent over to Node-RED, it's basically stored in memory until the server shuts down or overwrites that data with the next POST request that is sent over by the ESP32. This data is then visualised in a dashboard which is constantly updated every time it detects a change in values from the server. It's split into different columns and dynamically changes based on the resolution that it is being displayed on.
 
-<img src='../src/pages/posts/images/dashboard.png' class="center"/>
+<img src='../public/images/dashboard.png' class="center"/>
 
 This is the dashboard after running for just a few minutes. As you can see, the graph dynamically changes in size based on the history of data collected, and a few gauges represent the data now and how acceptable it is. The 'advice' section is merely an if/else statement that changes based on the value it reads. 
 
 For anyone wishing to view the data outside of the dashboard, the information is accessible from outside of the dashboard from an MQTT server. MQTT as a standardised publish/subscribe push protocol that was released by IBM in 1999 and was initially designed to send data accurately under large network delays or low bandwidth connections.  Its base design defines the following structure:
 
-<img src='../src/pages/posts/images/mqtt.png' class="center"/>
+<img src='../public/images/mqtt.png' class="center"/>
 
 This can even be accessed from a mobile device on the same network, which vastly expands the applications the data can be used in.
 
@@ -201,7 +201,7 @@ void AWebSocketActor::OnClosed(int32 StatusCode, const FString& Reason, bool bWa
 
 This code informs the user when the game has had a Websocket connection, and once it has it prints the incoming string into the game, presenting it for the player in the game. This is presented using a TextObject in the game that changes based on what is reads from the incoming Websocket data.
 
-<img src='../src/pages/posts/images/ingameweb.png' class="center"/>
+<img src='../public/images/ingameweb.png' class="center"/>
 
 
 <h1>What didn't work?</h1>
