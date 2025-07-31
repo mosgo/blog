@@ -99,7 +99,7 @@ hr {
   display: block;
   margin-left: auto;
   margin-right: auto;
-  width: 80%;
+  width: 550px;
   height: auto;
 }
 
@@ -107,7 +107,7 @@ hr {
   display: block;
   margin-left: auto;
   margin-right: auto;
-  width: 35%;
+  width: 250px;
   height: auto;
 }
 }
