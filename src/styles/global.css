@@ -94,21 +94,33 @@ hr {
     justify-content: space-between;
   }
 
-  /* Images */
+    /* Images */
+  .center {
+    width: 550px;
+    max-width: 100%;   
+    height: auto;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .center02 {
+    width: 250px;
+    max-width: 100%;  
+    height: auto;     
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+
+  @media (max-width: 600px) {
     .center {
-      width: 550px;
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
-      max-width: 100%;  
-      height: auto;      
+      width: 90vw;    
     }
 
     .center02 {
-      width: 250px;
-      max-width: 100%;
-      margin-left:auto;
-      margin-right:auto;
-      display: block;
+      width: 70vw;
     }
   }
+}
