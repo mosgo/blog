@@ -99,4 +99,120 @@ void loop() {
     }
 ```
 
-Now we've successfully collected the data and send it over to Node-RED, it's time to open Node-RED, set it up and see what data it is reading.
+Now we've successfully collected the data and send it over to Node-RED, it's time to open Node-RED, set it up and see what data it is reading. I've already created a flow which takes all fo the data and formats it to be displayed in a live dashboard (and sent over to the database).
+
+<img src='../../src/images/nodes.png' class="center"/>
+
+A post request is first sent to the server containing all of the data collected from the sensors. Once it has been received, it's read and sent to an SQLite server to store the data, a Websocket to communicate to Unreal Engine 5 and a dashboard to visualise the data.
+
+We need to prepare a JSON buffer first to send over to our Node-RED server, which is shown below:
+```js
+  HTTPClient http;
+
+  Serial.print("Connecting to website: ");
+  http.begin("http://192.168.8.172:1880/dht");  //HTTP connection, this could be any IP
+  
+  sprintf(buffer, "{\"temp\":%5.2f,\"humidity\":%5.2f}", t, h);
+  int httpCode = http.POST(buffer);
+  if (httpCode > 0) {
+    Serial.printf("[HTTP] POST... code: %d\n", httpCode);
+    if (httpCode == HTTP_CODE_OK) {
+      String payload = http.getString();
+      Serial.println(payload);
+    }
+  } else {
+    Serial.printf("[HTTP] POST... failed, error: %s\n", http.errorToString(httpCode).c_str());
+  }
+  http.end();
+}
+```
+
+<img src='../../src/images/request.png' class="center"/>
+
+This data is formatted using JSON and is sent over as an object containing the data stored in various properties. This data is later used to differentiate the data so it can be visualised in various columns.
+
+<img src='../../src/images/objectImage.png' class="center02"/>
+
+Once this is sent over to Node-RED, it's basically stored in memory until the server shuts down or overwrites that data with the next POST request that is sent over by the ESP32. This data is then visualised in a dashboard which is constantly updated every time it detects a change in values from the server. It's split into different columns and dynamically changes based on the resolution that it is being displayed on.
+
+<img src='../../src/images/dashboard.png' class="center"/>
+
+This is the dashboard after running for just a few minutes. As you can see, the graph dynamically changes in size based on the history of data collected, and a few gauges represent the data now and how acceptable it is. The 'advice' section is merely an if/else statement that changes based on the value it reads. 
+
+For anyone wishing to view the data outside of the dashboard, the information is accessible from outside of the dashboard from an MQTT server. MQTT as a standardised publish/subscribe push protocol that was released by IBM in 1999 and was initially designed to send data accurately under large network delays or low bandwidth connections.  Its base design defines the following structure:
+
+<img src='../../src/images/mqtt.png' class="center"/>
+
+This can even be accessed from a mobile device on the same network, which vastly expands the applications the data can be used in.
+
+Finally, the data is represented in a virtual space using Unreal Engine 5. This is achieved by using Websockets and the game reading and presenting this data within a string from a C++ class. C++ was used because this kind of object cannot be created from regular blueprints, and thus required the further access that writing in raw C++ provides. First, we need to find a way to send the data over to the Unreal Engine game. There's many ways of achieving this, but in the interest of simplicity and time I chose Websockets, mostly because my deadline was approaching!
+
+```cpp
+void AWebSocketActor::BeginPlay() {
+    Super::BeginPlay();
+
+    if (!FModuleManager::Get().IsModuleLoaded("WebSockets")) {
+        FModuleManager::Get().LoadModule("WebSockets");
+    }
+
+    //WebSocket = FWebSocketsModule::Get().CreateWebSocket(TEXT("ws://192.168.1.109:8080")); // match local machine
+    WebSocket = FWebSocketsModule::Get().CreateWebSocket(TEXT("ws://192.168.1.109:1880/ue5"));
+
+    // Server connection handers
+    WebSocket->OnConnected().AddUObject(this, &AWebSocketActor::OnConnected);
+    WebSocket->OnMessage().AddUObject(this, &AWebSocketActor::OnMessageReceived);
+    WebSocket->OnConnectionError().AddUObject(this, &AWebSocketActor::OnConnectionError);
+    WebSocket->OnClosed().AddUObject(this, &AWebSocketActor::OnClosed);
+
+    // Connect UE5 proj to Node websocket server
+    WebSocket->Connect();
+}
+```
+
+```cpp
+void AWebSocketActor::OnConnected() {
+    UE_LOG(LogTemp, Warning, TEXT("Connected to websocket"));
+    if (TextRenderComponent) {
+    TextRenderComponent->SetText(FText::FromString("Connected to websocket"));
+    }
+}
+
+void AWebSocketActor::OnMessageReceived(const FString& Message) {
+    UE_LOG(LogTemp, Warning, TEXT("New message: %s"), *Message);
+    if (TextRenderComponent) {
+    TextRenderComponent->SetText(FText::FromString(Message));
+    }
+}
+
+void AWebSocketActor::OnConnectionError(const FString& Error) {
+    UE_LOG(LogTemp, Error, TEXT("WebSocket Error: %s"), *Error);
+    if (TextRenderComponent) {
+    TextRenderComponent->SetText(FText::FromString("WebSocket Error!"));
+    }
+}
+
+void AWebSocketActor::OnClosed(int32 StatusCode, const FString& Reason, bool bWasClean) {
+    UE_LOG(LogTemp, Warning, TEXT("WebSocket Closed!"));
+    if (TextRenderComponent) {
+        TextRenderComponent->SetText(FText::FromString("WebSocket Disconnected"));
+    }
+}
+```
+
+This code informs the user when the game has had a Websocket connection, and once it has it prints the incoming string into the game, presenting it for the player in the game. This is presented using a TextObject in the game that changes based on what is reads from the incoming Websocket data.
+
+<img src='../../src/images/ingameweb.png' class="center"/>
+
+
+<h1>What didn't work?</h1>
+
+There were a few things I was wanting this project to achieve, but I really just didn't have the time to focus on them. For example, the Unreal level would dynamically change based on the air quality in the real world representing rooms. I also wanted to build a system that would advise the user what to do to improve the quality of the room; but I was only able to build a basic concept instead of developing something that could really be used in industry.
+
+A few things did work fine though. SQL was a very functional and easy way to store data that would've otherwise been lost once the server was shutdown (because the data would've been deleted from memory). There weren't really many issues with it by the end, but I was left with the impression that a lot more could be done.
+
+<br/>
+<h1>So what did I learn?</h1>
+
+Through this project, I learned that it's indeed possible to setup and create a system that monitors air quality and humidity at a very affordable price (under £10!). This project as able to collect constructive data and displayed the relevant benefits and flaws of using such a system. It provides good quality data, but nothing accurate enough to be used in industry. Networking capabilities and power use is generally low from this project, meaning that because of its low bandwidth it can run in various places, such as a campus or a business building at scale without hindering the existing network or compromising security.  Using the UI, it’s entirely possible for managers and users to accurately understand and benefit from reading real-time temperature, gas concentration and humidity data from a building.
+
+If I were to do this again, I'd focus on what it could do. For example, this system can only monitor one space, but it could quite easily monitor multiple spaces at once and split them into different categories based on the room it is in. Using modern AI tools, it could also be possible to suggest to managers what could be improved or changed in a room to improve the room air quality. It has quite a lot of potential, but because of the time I had to work on this project, half of my ambitions were not met. Despite all of this, I'm really happy with how it all turned out and I'll probably return to this project once I have the time!
