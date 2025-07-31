@@ -97,7 +97,7 @@ hr {
     /* Images */
   .center {
     width: 550px;
-    max-width: 100%;   
+    max-width: 100%;   /* never exceed container width */
     height: auto;
     display: block;
     margin-left: auto;
@@ -106,17 +106,17 @@ hr {
 
   .center02 {
     width: 250px;
-    max-width: 100%;  
-    height: auto;     
+    max-width: 100%;  /* responsive */
+    height: auto;     /* keep aspect ratio */
     display: block;
     margin-left: auto;
     margin-right: auto;
   }
 
-
+  /* Optional: make images smaller on narrow screens */
   @media (max-width: 600px) {
     .center {
-      width: 90vw;    
+      width: 90vw;    /* 90% of viewport width */
     }
 
     .center02 {
